@@ -2,7 +2,7 @@
 import { Command } from "commander";
 import { registerHelloCommand } from "./commands/hello.js";
 import { registerDirectoryScanCommand } from "./commands/directory-scan.js";
-import { registerFileDiscoveryCommand } from "./commands/file-discovery.js";
+import { registerInitCommand } from "./commands/init.js";
 const program = new Command();
 
 program
@@ -12,6 +12,6 @@ program
 
 registerHelloCommand(program);
 registerDirectoryScanCommand(program);
-registerFileDiscoveryCommand(program);
+registerInitCommand(program);
 await program.parseAsync(process.argv);
 

@@ -1,0 +1,1 @@
+To accurately understand the project structure use @.CONTEXTUAL directory instead of tools calls
