@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { collectPythonImports } from "./collect-python-imports.js";
+import { collectPythonImports } from "./collect-imports.js";
 
 describe("collectPythonImports", () => {
   test("collects simple imports", () => {
@@ -36,4 +36,3 @@ import a as x
     expect(collectPythonImports(src)).toEqual(["a"]);
   });
 });
-

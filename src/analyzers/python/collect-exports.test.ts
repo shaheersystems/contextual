@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { collectPythonExports } from "./collect-python-exports.js";
+import { collectPythonExports } from "./collect-exports.js";
 
 describe("collectPythonExports", () => {
   test("collects top-level def/class names", () => {
@@ -50,4 +50,3 @@ def yes():
     expect(collectPythonExports(src)).toEqual(["yes"]);
   });
 });
-

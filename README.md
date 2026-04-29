@@ -1,15 +1,29 @@
 # contextual
 
-To install dependencies:
+## Installation
 
 ```bash
 bun install
 ```
 
-To run:
+## Development
+
+Run the CLI directly from its TypeScript entrypoint:
 
 ```bash
-bun run index.ts
+bun run src/cli.ts
 ```
 
-This project was created using `bun init` in bun v1.2.5. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Or use the package script:
+
+```bash
+bun run dev
+```
+
+## Build
+
+```bash
+bun run build
+```
+
+The distributable CLI is built from `src/cli.ts` into `dist/cli.js`.
