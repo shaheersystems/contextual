@@ -13,12 +13,32 @@ type IgnoreMatcher = {
   ignores(pathname: string): boolean;
 };
 
+export type BuildTreeOptions = {
+  followSymlinks?: boolean;
+  /** Used internally to avoid symlink cycles */
+  _seenRealDirs?: Set<string>;
+};
+
 export function buildTree(
   absoluteDirectory: string,
   relativeDirectoryFromRoot: string,
   ig: IgnoreMatcher,
+  opts: BuildTreeOptions = {},
 ): TreeNode[] {
   const entries = fs.readdirSync(absoluteDirectory, { withFileTypes: true });
+
+  const followSymlinks = Boolean(opts.followSymlinks);
+  const seenRealDirs = opts._seenRealDirs ?? new Set<string>();
+
+  if (followSymlinks) {
+    try {
+      const real = fs.realpathSync(absoluteDirectory);
+      if (seenRealDirs.has(real)) return [];
+      seenRealDirs.add(real);
+    } catch {
+      // If we can't resolve realpath, proceed best-effort.
+    }
+  }
 
   const nodes: TreeNode[] = [];
   for (const entry of entries) {
@@ -30,17 +50,31 @@ export function buildTree(
     const entryRelForIgnore = toPosixPath(entryRel);
     if (ig.ignores(entryRelForIgnore)) continue;
 
-    if (entry.isDirectory()) {
-      const children = buildTree(entryAbs, entryRel, ig);
-      nodes.push({
-        name: entry.name,
-        relativePathFromRoot: entryRel,
-        type: "dir",
-        children,
-      });
-    } else {
-      nodes.push({ name: entry.name, relativePathFromRoot: entryRel, type: "file" });
+    if (entry.isSymbolicLink()) {
+      if (!followSymlinks) continue;
+      let stat: fs.Stats;
+      try {
+        stat = fs.statSync(entryAbs);
+      } catch {
+        continue;
+      }
+
+      if (stat.isDirectory()) {
+        const children = buildTree(entryAbs, entryRel, ig, { ...opts, _seenRealDirs: seenRealDirs });
+        nodes.push({ name: entry.name, relativePathFromRoot: entryRel, type: "dir", children });
+      } else if (stat.isFile()) {
+        nodes.push({ name: entry.name, relativePathFromRoot: entryRel, type: "file" });
+      }
+      continue;
     }
+
+    if (entry.isDirectory()) {
+      const children = buildTree(entryAbs, entryRel, ig, { ...opts, _seenRealDirs: seenRealDirs });
+      nodes.push({ name: entry.name, relativePathFromRoot: entryRel, type: "dir", children });
+      continue;
+    }
+
+    nodes.push({ name: entry.name, relativePathFromRoot: entryRel, type: "file" });
   }
 
   nodes.sort((a, b) => {

@@ -4,7 +4,7 @@ Use this checklist to evolve the project from a basic repository scanner into a 
 
 ## Phase 1: Foundation
 
-- [ ] Add a project configuration file
+- [x] Add a project configuration file
   - [ ] Choose a config name, such as `contextual.config.json` or `contextual.config.ts`.
   - [ ] Support `include` glob patterns.
   - [ ] Support `exclude` glob patterns.

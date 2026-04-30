@@ -5,7 +5,15 @@ import { buildShortDescription, collectMetadataForFile } from "./file-metadata.j
 import { identifyLanguage } from "./identify-language.js";
 import { flattenFiles, renderTreeLines, type TreeNode } from "./project-tree.js";
 
-export function renderProjectStructureMarkdown(root: string, tree: TreeNode[]): string {
+export type RenderProjectStructureOptions = {
+  maxFileSizeBytes?: number;
+};
+
+export function renderProjectStructureMarkdown(
+  root: string,
+  tree: TreeNode[],
+  opts: RenderProjectStructureOptions = {},
+): string {
   const lines: string[] = [];
   lines.push("# Project structure");
   lines.push("");
@@ -24,7 +32,7 @@ export function renderProjectStructureMarkdown(root: string, tree: TreeNode[]): 
   lines.push("");
 
   const files = flattenFiles(tree);
-  const maxBytes = 1024 * 1024; // 1MB
+  const maxBytes = opts.maxFileSizeBytes ?? 1024 * 1024;
 
   for (const file of files) {
     const relativePosix = toPosixPath(file.relativePathFromRoot);

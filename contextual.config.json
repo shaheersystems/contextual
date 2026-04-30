@@ -1,0 +1,8 @@
+{
+    "include": [""],
+    "exclude": ["**/*.test.ts"],
+    "output": ".CONTEXTUAL/AGENT_CONTEXT.md",
+    "languages": ["typescript", "json"],
+    "maxFileSizeBytes": 1048576,
+    "followSymlinks": false
+  }
